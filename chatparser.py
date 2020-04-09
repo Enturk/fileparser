@@ -2,13 +2,13 @@
 
 # main variables
 input_dir = "PastChats"
+fileSuffix = '.txt' # filetype we're looking for
+startMarker = "From  " # marks beginning of substring after which the snippet is extracted
+stopMarker = " : " # marks end of snippet to extract
 output_dir = "TestOutput"
 # testing done on a small number of known files
-# set to 0 if not testing
-numberOfFiles = 4
+numberOfFiles = 4 # set to 0 if not testing
 logfile = "chatparser.log"
-startMarker = "From  "
-stopMarker = " : "
 
 if __name__ == "__main__":
     Verbose = True
@@ -109,7 +109,7 @@ def parseLine(line, start, stop):
 #examine every file in folder
 fileCount = 0
 for filename in os.listdir(input_dir):
-    if filename[-4:] != '.txt':
+    if filename[-4:] != fileSuffix:
         logging.debug(f'Main: skipping {filename} because not a txt file.')
         continue
     logging.debug(f'Main: attempting to open {filename} in \n{input_dir}')
@@ -119,7 +119,9 @@ for filename in os.listdir(input_dir):
             user = parseLine(line, startMarker, stopMarker)
             if user != -1:
                 processUser(user)
-    fileCount += 1
-    if fileCount == numberOfFiles:
-        break
-print(userDict)
+    logging.debug(f'Finished with file {filename}. Here is what we got:')
+    logging.debug(userDict)
+    if numberOfFiles > 0:
+        fileCount += 1
+        if fileCount == numberOfFiles:
+            break
