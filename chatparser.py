@@ -133,7 +133,10 @@ for input_dir, dirnames, filenames in os.walk("."):
 
 #save it in a csv   
 savePath = os.path.join(output_dir, "Output_" + timestamp + ".csv")
-output = open(savePath, 'w')
-output.write(str(userDict))
-output.close
+#output = open(savePath, 'w')
+#content = "user, contributions"
+with open(savePath, 'w') as output:
+    for user in userDict.keys():
+        output.write("%s, %s\n" % (user, userDict[user]))
+#output.close
 logging.debug(f"Output written to {savePath}")
