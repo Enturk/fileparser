@@ -130,3 +130,10 @@ for input_dir, dirnames, filenames in os.walk("."):
             if fileCount == numberOfFiles:
                 logging.debug(f'Stopping because {fileCount} files procesed')
                 break
+
+#save it in a csv   
+savePath = os.path.join(output_dir, "Output_" + timestamp + ".csv")
+output = open(savePath, 'w')
+output.write(str(userDict))
+output.close
+logging.debug(f"Output written to {savePath}")
