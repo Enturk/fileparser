@@ -108,20 +108,25 @@ def parseLine(line, start, stop):
 
 #examine every file in folder
 fileCount = 0
-for filename in os.listdir(input_dir):
-    if filename[-4:] != fileSuffix:
-        logging.debug(f'Main: skipping {filename} because not a txt file.')
-        continue
-    logging.debug(f'Main: attempting to open {filename} in \n{input_dir}')
-    with open(os.path.join(input_dir, filename), encoding = "ISO-8859-1") as f:
-        logging.info(f'Main: opened {filename}')
-        for line in f:
-            user = parseLine(line, startMarker, stopMarker)
-            if user != -1:
-                processUser(user)
-    logging.debug(f'Finished with file {filename}. Here is what we got:')
-    logging.debug(userDict)
-    if numberOfFiles > 0:
-        fileCount += 1
-        if fileCount == numberOfFiles:
-            break
+import os.path
+for input_dir, dirnames, filenames in os.walk("."):
+    for filename in [f for f in filenames if f.endswith(fileSuffix)]:
+
+    #for filename in os.listdir(input_dir):
+        if filename[-4:] != fileSuffix:
+            logging.debug(f'Main: skipping {filename} because not a txt file.')
+            continue
+        logging.debug(f'Main: attempting to open {filename} in \n{input_dir}')
+        with open(os.path.join(input_dir, filename), encoding = "ISO-8859-1") as f:
+            logging.info(f'Main: opened {filename}')
+            for line in f:
+                user = parseLine(line, startMarker, stopMarker)
+                if user != -1:
+                    processUser(user)
+        logging.debug(f'Finished with file {filename}. Here is what we got:')
+        logging.debug(userDict)
+        if numberOfFiles > 0:
+            fileCount += 1
+            if fileCount == numberOfFiles:
+                logging.debug(f'Stopping because {fileCount} files procesed')
+                break
