@@ -3,11 +3,11 @@
 # main variables
 input_dir = "PastChats"
 fileSuffix = '.txt' # filetype we're looking for
-startMarker = "From  " # marks beginning of substring after which the snippet is extracted
-stopMarker = " : " # marks end of snippet to extract
+startMarker = "From" # marks beginning of substring after which the snippet is extracted
+stopMarker = ": " # marks end of snippet to extract
 output_dir = "TestOutput"
 # testing done on a small number of known files
-numberOfFiles = 4 # set to 0 if not testing
+numberOfFiles = 0 # set to 0 if not testing - not sure this is being implemented properly down near the bottom
 logfile = "chatparser.log"
 
 if __name__ == "__main__":
@@ -21,7 +21,7 @@ timestamp = time.strftime('%Y-%m-%d+%H-%M-%S', ts)
 
 import logging
 if Verbose:
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 else:
     logging.basicConfig(filename=logfile, filemode='a', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 logging.info(f'New script run on: {timestamp}')
@@ -103,6 +103,8 @@ def parseLine(line, start, stop):
         begin = line.find(start) + len(start)
         end = line.find(stop)
         snippet = line[begin:end]
+        snippet = snippet.lstrip()
+        snippet = snippet.rstrip()
         logging.info(f'parseLine found {snippet} in this line:\n{line}')
         return snippet
 
@@ -123,20 +125,25 @@ for input_dir, dirnames, filenames in os.walk("."):
                 user = parseLine(line, startMarker, stopMarker)
                 if user != -1:
                     processUser(user)
-        logging.debug(f'Finished with file {filename}. Here is what we got:')
+        logging.debug(f'Main: Finished with file {filename}. Here is what we got:')
         logging.debug(userDict)
-        if numberOfFiles > 0:
+        if numberOfFiles > 0: # FIXME this doesn't seem to trigger...
             fileCount += 1
             if fileCount == numberOfFiles:
                 logging.debug(f'Stopping because {fileCount} files procesed')
                 break
-
+            
 #save it in a csv   
 savePath = os.path.join(output_dir, "Output_" + timestamp + ".csv")
-#output = open(savePath, 'w')
-#content = "user, contributions"
 with open(savePath, 'w') as output:
-    for user in userDict.keys():
-        output.write("%s, %s\n" % (user, userDict[user]))
+    for user in userDict: #userDict.keys():
+        logging.debug(f'Saving to csv: writing user {user}')
+        if ' ' in user:
+            first = user.split()[0]
+            last = user.split()[1]
+            count = userDict[user]
+            output.write("%s,%s,%s\n" % (first, last, count))
+        else:
+            output.write("%s,%s\n" % (user, userDict[user]))
 #output.close
 logging.debug(f"Output written to {savePath}")
