@@ -9,6 +9,7 @@ output_dir = "TestOutput"
 # testing done on a small number of known files
 numberOfFiles = 0 # set to 0 if not testing - not sure this is being implemented properly down near the bottom
 logfile = "chatparser.log"
+separateNames = False
 
 if __name__ == "__main__":
     Verbose = True
@@ -70,15 +71,15 @@ import os
 # script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 script_dir = os.getcwd()
 if os.path.exists(os.path.join(script_dir, input_dir)):
-    input_dir = os.path.join(script_dir, input_dir)
-    logging.info(f'Current input directory is {input_dir}')
+    input_path = os.path.join(script_dir, input_dir)
+    logging.info(f'Current input directory is {input_path}')
 else:
     logging.critical(f'Fatal error - input directory {input_dir} not found')
     sys.exit(1)
 
 if os.path.exists(os.path.join(script_dir, output_dir)):
     output_dir = os.path.join(script_dir, output_dir)
-    logging.info(f'Current output directory is {input_dir}')
+    logging.info(f'Current output directory is {output_dir}')
 else:
     logging.critical(f'Fatal error - output directory {output_dir} not found')
     sys.exit(1)
@@ -111,7 +112,7 @@ def parseLine(line, start, stop):
 #examine every file in folder
 fileCount = 0
 import os.path
-for input_dir, dirnames, filenames in os.walk("."):
+for input_path, dirnames, filenames in os.walk(input_dir):
     for filename in [f for f in filenames if f.endswith(fileSuffix)]:
 
     #for filename in os.listdir(input_dir):
@@ -119,13 +120,13 @@ for input_dir, dirnames, filenames in os.walk("."):
             logging.debug(f'Main: skipping {filename} because not a txt file.')
             continue
         logging.debug(f'Main: attempting to open {filename} in \n{input_dir}')
-        with open(os.path.join(input_dir, filename), encoding = "ISO-8859-1") as f:
+        with open(os.path.join(input_path, filename), encoding = "ISO-8859-1") as f:
             logging.info(f'Main: opened {filename}')
             for line in f:
                 user = parseLine(line, startMarker, stopMarker)
                 if user != -1:
                     processUser(user)
-        logging.debug(f'Main: Finished with file {filename}. Here is what we got:')
+        logging.debug(f'Main: Finished with file {filename} in {input_path}. Here is what we got:')
         logging.debug(userDict)
         if numberOfFiles > 0: # FIXME this doesn't seem to trigger...
             fileCount += 1
@@ -138,7 +139,7 @@ savePath = os.path.join(output_dir, "Output_" + timestamp + ".csv")
 with open(savePath, 'w') as output:
     for user in userDict: #userDict.keys():
         logging.debug(f'Saving to csv: writing user {user}')
-        if ' ' in user:
+        if ' ' in user and separateNames:
             first = user.split()[0]
             last = user.split()[1]
             count = userDict[user]
