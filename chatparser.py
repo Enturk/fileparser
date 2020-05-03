@@ -112,7 +112,6 @@ def parseLine(line, start, stop):
 
 #examine every file in folder
 fileCount = 0
-import os.path
 for input_path, dirnames, filenames in os.walk(input_dir):
     for filename in [f for f in filenames if f.endswith(fileSuffix)]:
 
