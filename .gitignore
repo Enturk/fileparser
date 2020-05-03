@@ -3,4 +3,5 @@
 *.csv
 *.m3u
 *.json
+*.pickle
 Roosen Chats/*
