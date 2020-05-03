@@ -10,6 +10,7 @@ output_dir = "TestOutput"
 numberOfFiles = 0 # set to 0 if not testing - not sure this is being implemented properly down near the bottom
 logfile = "chatparser.log"
 separateNames = False
+blacklist = ["Andrew Roosen", "Nazim Karaca", "Ben Segal", "Shivanand"] # names ignored
 
 if __name__ == "__main__":
     Verbose = True
@@ -137,7 +138,20 @@ for input_path, dirnames, filenames in os.walk(input_dir):
 #save it in a csv   
 savePath = os.path.join(output_dir, "Output_" + timestamp + ".csv")
 with open(savePath, 'w') as output:
-    for user in userDict: #userDict.keys():
+    for user, value in sorted(userDict.items()):
+
+        # check blacklist
+        blacklisted = False
+        for name in blacklist:
+            logging.debug(f'Comparing {user} to {name}')
+            if user[:len(name)] == name:
+                logging.debug(f'Looks like they are the same.')
+                blacklisted = True
+                break
+        if blacklisted:
+            continue
+
+        # otherwise, save
         logging.debug(f'Saving to csv: writing user {user}')
         if ' ' in user and separateNames:
             first = user.split()[0]
