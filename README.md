@@ -8,7 +8,9 @@ An input folder, by default named *PastChats*, and an output folder, by default 
 
 ## Google API
 
-To use the API with python, you need to enable it here: https://developers.google.com/sheets/api/quickstart/python
+To use the API with python, you need to enable it here: [https://developers.google.com/sheets/api/quickstart/python](https://developers.google.com/sheets/api/quickstart/python "Google API for Python")
 
 And then, install the library (the above link has some troubleshooting steps):
-*$ pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib*
+```
+$ pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+```
